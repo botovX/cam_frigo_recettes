@@ -1,0 +1,28 @@
+name: frigo_recettes
+description: "Application de génération de recettes basées sur le contenu du frigo."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  
+  # Gestion des images et de l'API Gemini
+  image_picker: ^1.1.2
+  google_generative_ai: ^0.4.0
+  
+  # Publicités et Persistance (Premium simulé)
+  google_mobile_ads: ^5.1.0
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

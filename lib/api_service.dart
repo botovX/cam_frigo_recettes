@@ -4,7 +4,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 
 class ApiService {
   // ⚠️ Mettez votre clé API Gemini ici
-  static const String _apiKey = "VOTRE_CLE_API_GEMINI";
+  static const String _apiKey = "AQ.Ab8RN6IZEEdi8hnMpxYTE4zEsn8VXf8pdpcpYIP-7DlWf1Jh5g";
 
   static Future<Map<String, dynamic>> genererRecettes(Uint8List imageBytes) async {
     try {

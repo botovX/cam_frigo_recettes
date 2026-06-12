@@ -8,9 +8,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialisation d'AdMob
-  final initFuture = MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
   
-  // Initialisation du service Premium simulé
+  // Initialisation du service Premium
   final prefs = await SharedPreferences.getInstance();
   final premiumService = PremiumService(prefs);
 
@@ -20,7 +20,7 @@ void main() async {
 class FrigoRecettesApp extends StatelessWidget {
   final PremiumService premiumService;
 
-  const FrigoRecettesApp({super.key, required this.premiumService});
+  const FrigoRecettesApp({Key? key, required this.premiumService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +28,7 @@ class FrigoRecettesApp extends StatelessWidget {
       title: 'FrigoRecettes',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          primary: Colors.teal,
-          secondary: Colors.orangeAccent,
-        ),
-        useMaterial3: true,
+        primarySwatch: Colors.teal,
       ),
       home: HomeScreen(premiumService: premiumService),
     );

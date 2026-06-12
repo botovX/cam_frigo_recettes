@@ -10,7 +10,7 @@ class ApiService {
     try {
       // Utilisation du modèle flash compatible
       final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-pro-vision',
         apiKey: _apiKey,
       );
 

@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Frigo Recettes',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterialDesign: true,
       ),
       home: const HomePage(),
@@ -32,8 +32,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _resultat = "Prenez une photo de votre frigo pour commencer !";
   bool _enChargement = false;
-
-  // Simulation de l'image (à remplacer par ton système de caméra dans ton code réel)
   final Uint8List _imageSimulee = Uint8List(0); 
 
   Future<void> _envoyerImage() async {
@@ -42,11 +40,10 @@ class _HomePageState extends State<HomePage> {
       _resultat = "Analyse du frigo en cours...";
     });
 
-    // Appel direct et propre de notre service nettoyé
-    final réponseIA = await ApiService.genererRecettes(_imageSimulee);
+    final reponseIA = await ApiService.genererRecettes(_imageSimulee);
 
     setState(() {
-      _resultat = réponseIA;
+      _resultat = reponseIA;
       _enChargement = false;
     });
   }

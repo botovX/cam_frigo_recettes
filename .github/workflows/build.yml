@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  # Étape de boost : On double la mémoire allouée au moteur de compilation
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '17' # Java 17 est nécessaire pour les versions récentes de Kotlin
+        java-version: '17'
 
     - name: Configurer Flutter
       uses: subosito/flutter-action@v2
@@ -31,11 +35,14 @@ jobs:
 
     - name: Forcer les propriétés Android et la version Kotlin
       run: |
-        # Configuration de base d'AndroidX
         echo "android.useAndroidX=true" > android/gradle.properties
         echo "android.enableJetifier=true" >> android/gradle.properties
         
-        # Astuce de programmation : on remplace automatiquement la version de Kotlin obsolète par une version récente (1.9.20)
+        # Désactivation de R8 lourd pour éviter le manque de mémoire
+        echo "android.enableR8.libraries=false" >> android/gradle.properties
+        echo "android.enableR8=false" >> android/gradle.properties
+        
+        # Mise à jour automatique de la version de Kotlin
         sed -i "s/ext.kotlin_version = .*/ext.kotlin_version = '1.9.20'/g" android/build.gradle
 
     - name: Récupérer les dépendances

@@ -13,13 +13,13 @@ jobs:
     - name: Récupérer le code du dépôt
       uses: actions/checkout@v4
 
-    - name: Configurer Java (Forcer Java 11 pour Gradle 7)
+    - name: Configurer Java
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '11'
+        java-version: '17' # Java 17 est nécessaire pour les versions récentes de Kotlin
 
-    - name: Configurer Flutter (Version rétro-compatible)
+    - name: Configurer Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.19.6'
@@ -29,10 +29,14 @@ jobs:
         flutter clean
         flutter create . --platforms=android --org com.frigorecettes
 
-    - name: Forcer la configuration des propriétés Android
+    - name: Forcer les propriétés Android et la version Kotlin
       run: |
+        # Configuration de base d'AndroidX
         echo "android.useAndroidX=true" > android/gradle.properties
         echo "android.enableJetifier=true" >> android/gradle.properties
+        
+        # Astuce de programmation : on remplace automatiquement la version de Kotlin obsolète par une version récente (1.9.20)
+        sed -i "s/ext.kotlin_version = .*/ext.kotlin_version = '1.9.20'/g" android/build.gradle
 
     - name: Récupérer les dépendances
       run: flutter pub get

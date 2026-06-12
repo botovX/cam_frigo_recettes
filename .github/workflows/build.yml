@@ -13,22 +13,23 @@ jobs:
     - name: Récupérer le code du dépôt
       uses: actions/checkout@v4
 
-    - name: Configurer Java
+    - name: Configurer Java (Forcer Java 11 pour Gradle 7)
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '17'
+        java-version: '11'
 
-    - name: Configurer Flutter
+    - name: Configurer Flutter (Version rétro-compatible)
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # On repasse sur la dernière version stable
+        flutter-version: '3.19.6'
 
-    - name: Créer un projet Android propre et compatible
+    - name: Nettoyer et générer le projet Android
       run: |
+        flutter clean
         flutter create . --platforms=android --org com.frigorecettes
-        
-    - name: Forcer la compatibilité Gradle pour AdMob
+
+    - name: Forcer la configuration des propriétés Android
       run: |
         echo "android.useAndroidX=true" > android/gradle.properties
         echo "android.enableJetifier=true" >> android/gradle.properties
@@ -37,7 +38,7 @@ jobs:
       run: flutter pub get
 
     - name: Compiler l'APK en mode Release
-      run: flutter build apk --release --no-pub
+      run: flutter build apk --release
       
     - name: Sauvegarder l'APK pour le télécharger
       uses: actions/upload-artifact@v4

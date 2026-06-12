@@ -2,8 +2,8 @@ name: Compile mon APK Flutter
 
 on:
   push:
-    branches: [ main ] # Se déclenche à chaque fois que vous modifiez le code
-  workflow_dispatch: # Permet de lancer la compilation manuellement d'un clic
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     - name: Récupérer le code du dépôt
       uses: actions/checkout@v4
 
-    - name: Configurer Java (Obligatoire pour Android)
+    - name: Configurer Java
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
@@ -22,17 +22,23 @@ jobs:
     - name: Configurer Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.0'
+        channel: 'stable' # On repasse sur la dernière version stable
 
-    - name: Réparer et créer l'environnement Android automatiquement
-      run: flutter create . --platforms=android
+    - name: Créer un projet Android propre et compatible
+      run: |
+        flutter create . --platforms=android --org com.frigorecettes
+        
+    - name: Forcer la compatibilité Gradle pour AdMob
+      run: |
+        echo "android.useAndroidX=true" > android/gradle.properties
+        echo "android.enableJetifier=true" >> android/gradle.properties
 
-    - name: Récupérer les dépendances (pub get)
+    - name: Récupérer les dépendances
       run: flutter pub get
 
     - name: Compiler l'APK en mode Release
-      run: flutter build apk --release
-
+      run: flutter build apk --release --no-pub
+      
     - name: Sauvegarder l'APK pour le télécharger
       uses: actions/upload-artifact@v4
       with:

@@ -1,21 +1,17 @@
-name: frigo_recettes
-description: "Application de génération de recettes basées sur le contenu du frigo."
+name: cam_frigo_recettes
+description: "Une application Flutter pour générer des recettes à partir des photos du frigo."
 publish_to: 'none'
+
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-  
-  # Versions stables et testées pour Flutter 3.19.x
-  image_picker: ^1.0.7
-  google_generative_ai: ^0.4.0
-  google_mobile_ads: ^4.0.0
-  shared_preferences: ^2.2.2
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -24,3 +20,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Si vous avez des images locales ou des polices, vous pourrez les déclarer ici plus tard.

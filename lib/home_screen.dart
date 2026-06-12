@@ -7,7 +7,7 @@ import 'premium_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final PremiumService premiumService;
-  const HomeScreen({super.key, required this.premiumService});
+  const HomeScreen({Key? key, required this.premiumService}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -19,16 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   
-  // Données reçues de l'API
   List<dynamic> _ingredients = [];
   List<dynamic> _recettes = [];
 
-  // Publicités AdMob
   BannerAd? _bannerAd;
   bool _isBannerLoaded = false;
   InterstitialAd? _interstitialAd;
 
-  // Identifiants AdMob de TEST (Android standard)
   final String _bannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
   final String _interstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712';
 
@@ -39,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadInterstitialAd();
   }
 
-  // Chargement de la bannière de pub
   void _loadBannerAd() {
     _bannerAd = BannerAd(
       adUnitId: _bannerAdUnitId,
@@ -54,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     )..load();
   }
 
-  // Chargement de l'interstitiel
   void _loadInterstitialAd() {
     InterstitialAd.load(
       adUnitId: _interstitialAdUnitId,
@@ -66,15 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Affichage de l'interstitiel
   void _showInterstitialAd() {
     if (_interstitialAd != null) {
       _interstitialAd!.show();
-      _loadInterstitialAd(); // On recharge pour la prochaine fois
+      _loadInterstitialAd();
     }
   }
 
-  // Sélection de la photo
   Future<void> _pickImage() async {
     final XFile? selected = await _picker.pickImage(source: ImageSource.camera);
     if (selected != null) {
@@ -85,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Traitement et appel API
   Future<void> _analyserFrigo() async {
     if (_imageFile == null) return;
 
@@ -104,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
 
-      // Affichage de la pub après génération réussie
       _showInterstitialAd();
     } catch (e) {
       setState(() {
@@ -114,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Simuler l'achat Premium
   void _debloquerPremium() async {
     showDialog(
       context: context,
@@ -124,10 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     bool success = await widget.premiumService.purchasePremium();
     if (!mounted) return;
-    Navigator.pop(context); // Fermer le loader
+    Navigator.pop(context);
 
     if (success) {
-      setState(() {}); // Rafraîchit l'écran pour afficher toutes les recettes
+      setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Félicitations ! Version Premium activée 🎉')),
       );
@@ -144,14 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     bool isPremium = widget.premiumService.isPremium();
-    // Limitation : 2 recettes si gratuit, tout si premium
     int recettesAfficheesCount = isPremium ? _recettes.length : (_recettes.length > 2 ? 2 : _recettes.length);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('FrigoRecettes 🍳'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Colors.teal.shade100,
         actions: [
           if (!isPremium)
             TextButton.icon(
@@ -162,7 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
           else
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              key: ValueKey('premium_badge'),
               child: Center(child: Text('PRO ✨', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal))),
             )
         ],
@@ -175,7 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // --- SECTION PHOTO ---
                   GestureDetector(
                     onTap: _pickImage,
                     child: Container(
@@ -183,12 +170,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.teal.shade200),
+                        border: Border.all(color: Colors.teal),
                       ),
                       child: _imageFile != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.file(File(_imageFile!.path), fit: BoxCover.cover),
+                              child: Image.file(File(_imageFile!.path), fit: BoxFit.cover),
                             )
                           : const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -201,8 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // --- BOUTON DE GÉNÉRATION ---
                   ElevatedButton.icon(
                     onPressed: _imageFile != null && !_isLoading ? _analyserFrigo : null,
                     icon: const Icon(Icons.auto_awesome),
@@ -214,8 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // --- ETAT DE CHARGEMENT OU ERREUR ---
                   if (_isLoading)
                     const Center(
                       child: Padding(
@@ -225,10 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   if (_errorMessage != null)
                     Text(_errorMessage!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
-
-                  // --- AFFICHAGE INGRÉDIENTS DÉTECTÉS ---
                   if (_ingredients.isNotEmpty && !_isLoading) ...[
-                    Text('Ingrédients détectés :', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    const Text('Ingrédients détectés :', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8.0,
@@ -236,10 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 24),
                   ],
-
-                  // --- AFFICHAGE DES RECETTES ---
                   if (_recettes.isNotEmpty && !_isLoading) ...[
-                    Text('Vos Recettes :', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.teal, fontWeight: FontWeight.bold)),
+                    const Text('Vos Recettes :', style: TextStyle(fontSize: 18, color: Colors.teal, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     ListView.builder(
                       shrinkWrap: true,
@@ -281,8 +260,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     ),
-
-                    // --- BANNIÈRE DE RESTRICTION PREMIUM ---
                     if (!isPremium && _recettes.length > 2)
                       Container(
                         margin: const EdgeInsets.only(top: 16),
@@ -313,8 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          
-          // --- BANNIÈRE PUBLICITAIRE EN BAS ---
           if (_isBannerLoaded && _bannerAd != null)
             SafeArea(
               child: SizedBox(

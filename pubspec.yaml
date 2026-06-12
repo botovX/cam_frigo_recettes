@@ -11,13 +11,11 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.6
   
-  # Gestion des images et de l'API Gemini
-  image_picker: ^1.1.2
-  google_generative_ai: ^0.4.0
-  
-  # Publicités et Persistance (Premium simulé)
-  google_mobile_ads: ^5.1.0
-  shared_preferences: ^2.2.3
+  # Versions stables et testées pour Flutter 3.19.x
+  image_picker: ^1.0.7
+  google_generative_ai: ^0.2.2
+  google_mobile_ads: ^4.0.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

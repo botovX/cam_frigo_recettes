@@ -20,4 +20,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # Si vous avez des images locales ou des polices, vous pourrez les déclarer ici plus tard.

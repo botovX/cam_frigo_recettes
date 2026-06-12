@@ -22,7 +22,7 @@ jobs:
     - name: Configurer Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        flutter-version: '3.22.0'
 
     - name: Réparer et créer l'environnement Android automatiquement
       run: flutter create . --platforms=android

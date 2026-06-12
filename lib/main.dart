@@ -1,36 +1,98 @@
-import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'home_screen.dart';
-import 'premium_service.dart';
+import 'dart:typed_data';
+import 'package:flutter/material';
+import 'api_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialisation d'AdMob
-  await MobileAds.instance.initialize();
-  
-  // Initialisation du service Premium
-  final prefs = await SharedPreferences.getInstance();
-  final premiumService = PremiumService(prefs);
-
-  runApp(FrigoRecettesApp(premiumService: premiumService));
+void main() {
+  runApp(const MyApp());
 }
 
-class FrigoRecettesApp extends StatelessWidget {
-  final PremiumService premiumService;
-
-  const FrigoRecettesApp({Key? key, required this.premiumService}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FrigoRecettes',
-      debugShowCheckedModeBanner: false,
+      title: 'Frigo Recettes',
       theme: ThemeData(
         primarySwatch: Colors.teal,
+        useMaterialDesign: true,
       ),
-      home: HomeScreen(premiumService: premiumService),
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _resultat = "Prenez une photo de votre frigo pour commencer !";
+  bool _enChargement = false;
+
+  // Simulation de l'image (à remplacer par ton système de caméra dans ton code réel)
+  final Uint8List _imageSimulee = Uint8List(0); 
+
+  Future<void> _envoyerImage() async {
+    setState(() {
+      _enChargement = true;
+      _resultat = "Analyse du frigo en cours...";
+    });
+
+    // Appel direct et propre de notre service nettoyé
+    final réponseIA = await ApiService.genererRecettes(_imageSimulee);
+
+    setState(() {
+      _resultat = réponseIA;
+      _enChargement = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("FrigoRecettes 🍳"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFB2DFDB),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.fastfood, size: 80, color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _enChargement ? null : _envoyerImage,
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text("Générer mes recettes"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF009688),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+            ),
+            const SizedBox(height: 20),
+            _enChargement
+                ? const CircularProgressIndicator()
+                : Text(
+                    _resultat,
+                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }

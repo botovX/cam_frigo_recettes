@@ -1,30 +1,52 @@
+import 'dart:convert';
 import 'dart:typed_data';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Remplace bien par TA clé API complète à l'intérieur des guillemets
+  // Mets TA clé API complète ici à la place de celle-ci
   static const String _apiKey = "AIzaSy...la_suite_de_ta_clé_copiée...Jh5g";
 
   static Future<String> genererRecettes(Uint8List imageBytes) async {
     try {
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: _apiKey,
+      final url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$_apiKey',
       );
 
-      final prompt = TextPart(
-        "Regarde cette photo de mon frigo/cuisine. Écris une liste de recettes claires et réalisables uniquement avec les ingrédients visibles ou des basiques de placard (sel, huile, poivre). Donne des instructions étape par étape.",
+      final base64Image = base64Encode(imageBytes);
+
+      final corpsRequete = {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "Regarde cette photo de mon frigo/cuisine. Écris une liste de recettes claires et réalisables uniquement avec les ingrédients visibles ou des basiques de placard (sel, huile, poivre). Donne des instructions étape par étape."
+              },
+              {
+                "inlineData": {
+                  "mimeType": "image/jpeg",
+                  "data": base64Image
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(corpsRequete),
       );
 
-      final imagePart = DataPart('image/jpeg', imageBytes);
-
-      final response = await model.generateContent([
-        Content.multi([prompt, imagePart])
-      ]);
-
-      return response.text ?? "L'IA a renvoyé une réponse vide.";
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final texteGenere = jsonResponse['candidates'][0]['content']['parts'][0]['text'];
+        return texteGenere ?? "L'IA a renvoyé une réponse vide.";
+      } else {
+        return "Erreur Gemini (Code ${response.statusCode}): ${response.body}";
+      }
     } catch (e) {
-      return "Exception: Erreur lors de la génération : $e";
+      return "Exception: Erreur de communication : $e";
     }
   }
 }

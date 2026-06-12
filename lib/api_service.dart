@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Remplace bien par TA clé API complète à l'intérieur des guillemets
+  // COPIE TA VRAIE CLÉ ENTIÈRE ENTRE LES GUILLEMETS ICI :
   static const String _apiKey = "AQ.Ab8RN6IZEEdi8hnMpxYTE4zEsn8VXf8pdpcpYIP-7DlWf1Jh5g";
 
   static Future<String> genererRecettes(Uint8List imageBytes) async {

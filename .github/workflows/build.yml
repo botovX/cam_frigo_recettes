@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  # Étape de boost : On double la mémoire allouée au moteur de compilation
+  # Allocation de mémoire boostée pour éviter les pannes de RAM
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
 
 jobs:
@@ -35,14 +35,11 @@ jobs:
 
     - name: Forcer les propriétés Android et la version Kotlin
       run: |
+        # Configuration standard propre
         echo "android.useAndroidX=true" > android/gradle.properties
         echo "android.enableJetifier=true" >> android/gradle.properties
         
-        # Désactivation de R8 lourd pour éviter le manque de mémoire
-        echo "android.enableR8.libraries=false" >> android/gradle.properties
-        echo "android.enableR8=false" >> android/gradle.properties
-        
-        # Mise à jour automatique de la version de Kotlin
+        # Mise à jour de la version de Kotlin requise
         sed -i "s/ext.kotlin_version = .*/ext.kotlin_version = '1.9.20'/g" android/build.gradle
 
     - name: Récupérer les dépendances
